@@ -15,4 +15,13 @@ class Resource(Enum):
     STONE = 5
     DESERT = 6
 
+resource_emoji = {
+    Resource.SHEEP : '🐑',
+    Resource.WHEAT : '🌾',
+    Resource.WOOD : '🌲',
+    Resource.BRICK : '🧱',
+    Resource.STONE : '🪨',
+    Resource.DESERT : '🏜️',
+}
+
     
