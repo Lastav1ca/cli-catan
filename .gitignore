@@ -1,2 +1,4 @@
 venv/
 memory/
+__pycache__/
+
