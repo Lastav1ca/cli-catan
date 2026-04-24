@@ -19,6 +19,7 @@ class HexGrid():
         ##     17   18   19
 
     def generate_hex_grid(self):
+
         resources = ([ResourceEnum.Resource.SHEEP] * ResourceEnum.SHEEP_COUNT 
                      + [ResourceEnum.Resource.WHEAT] * ResourceEnum.WHEAT_COUNT 
                      + [ResourceEnum.Resource.WOOD] * ResourceEnum.WOOD_COUNT 
@@ -47,13 +48,11 @@ class HexGrid():
 
         hex_coordinates = get_all_hexes()
 
-        hex_physical_coordinates = [hex[1] for hex in hex_coordinates] 
-
         hex_idx = 0
 
         for hex in self.hexes:
 
-            vertex_physical_coordiantes = find_hex_vertices(hex_physical_coordinates[hex_idx])
+            vertex_physical_coordiantes = find_hex_vertices(hex_coordinates[hex_idx])
 
             hex.set_vertices(vertex_physical_coordiantes)
 
