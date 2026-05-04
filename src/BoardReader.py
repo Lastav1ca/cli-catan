@@ -1,11 +1,11 @@
 import math
 
 def get_all_vertices():
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as grid:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
 
         vertices = []
 
-        for row_idx, line in enumerate(grid):
+        for row_idx, line in enumerate(file):
 
             if 'EOF' in line:
                 return vertices
@@ -16,18 +16,18 @@ def get_all_vertices():
                     vertices.append((col_idx, row_idx))
 
 def get_all_hexes():
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as grid:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
 
         hex_positions = []
 
-        for row_idx, line in enumerate(grid):
+        for row_idx, line in enumerate(file):
 
             if 'EOF' in line:
                 return hex_positions
             
             for col_idx, row in enumerate(line):
 
-                if row.isdigit():
+                if row.isdigit() or row == 'D':
 
                     if line[col_idx - 1].isdigit():
                         continue
@@ -58,5 +58,12 @@ def find_hex_vertices(hex_physical_coordinates):
 
     return hex_vertices
 
+def print_hex_grid():
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+        content = file.readlines()
 
+    content.pop()
+
+    for row_idx, line in enumerate(content):
+        print(line)
 

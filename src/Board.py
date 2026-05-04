@@ -66,21 +66,6 @@ class HexGrid():
             print(f'Hex: {idx} Vertex coords: {hex.vertices}')
             idx += 1
     
-    def draw_hex_grid(self):
-        row1 = self.hexes[0 : 3]
-        row2 = self.hexes[3 : 7]
-        row3 = self.hexes[7 : 12]
-        row4 = self.hexes[12 : 16]
-        row5 = self.hexes[16 : 19]
-        rows = [row1, row2, row3, row4, row5]
-
-        for row in rows:
-            lines = []
-            for i in range(0, 5):
-                lines.append('')
-                for hex in row:
-                    hex_lines = hex.get_hex_lines()
-                    lines[i] += hex_lines[i]
 
 
 
