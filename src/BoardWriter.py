@@ -75,7 +75,49 @@ def insert_hex_values(hexes):
 
 
 def insert_hex_resources(hexes):
-    pass
+
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+        content = file.readlines()
+
+    hex_idx = 0
+    skip_next = False
+
+    for row_idx, line in enumerate(content):
+
+        if 'EOF' in line:
+            break
+
+        replacements = [] #replacements is a list of tuples which contains 
+                          # 1. the replacement position
+                          # 2. the value to insert
+
+        for col_idx, col in enumerate(line):
+
+            if col == 'r':
+
+                new_emoji = str(resource_emoji[hexes[hex_idx].resource_yield])
+
+                if hexes[hex_idx].resource_yield == Resource.DESERT:
+                    
+                    #needed an extra check here for Stone and Desert emojis, as they are 2 characters long when printed
+
+                    new_emoji = f'{new_emoji} '
+
+                    replacements.append((col_idx, new_emoji))
+                    hex_idx += 1
+                    continue
+
+                replacements.append((col_idx, new_emoji))
+                hex_idx += 1
+
+        for position, value in reversed(replacements):
+            line = line[:position] + value + line[position + 2:]
+        content[row_idx] = line
+            
+
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+        file.writelines(content)
+
 
 def reset_board():
     with open('../data/catan_hex_grid_template.txt', mode = 'r', encoding = None) as file:
