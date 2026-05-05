@@ -120,7 +120,7 @@ def insert_hex_resources(hexes):
         file.writelines(content)
 
 
-def insert_settlement(vertex_coordinates, player):
+def insert_settlement(vertex_coordinates):
 
     with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
         content = file.readlines()
@@ -138,9 +138,7 @@ def insert_settlement(vertex_coordinates, player):
             
         if position_found:
 
-            player_color = player_colors_codes[player.color]
-            settlement = f'{player_color}' + 'S' + f'{player_colors_codes[0]}'
-            line = line[:vertex_coordinates[0]] + settlement + line[vertex_coordinates[0] + 1:]
+            line = line[:vertex_coordinates[0]] + 'S' + line[vertex_coordinates[0] + 1:]
             #print(f'Koordinate {line[vertex_coordinates[0]:]} \n')
             content[row_idx] = line
 
@@ -149,7 +147,7 @@ def insert_settlement(vertex_coordinates, player):
     with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
         file.writelines(content)
 
-def insert_city(vertex_coordinates, player):
+def insert_city(vertex_coordinates):
 
     with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
         content = file.readlines()
@@ -167,13 +165,69 @@ def insert_city(vertex_coordinates, player):
             
         if position_found:
 
-            player_color = player_colors_codes[player.color]
-            city = f'{player_color}' + 'C' + f'{player_colors_codes[0]}'
-            line = line[:vertex_coordinates[0]] + city + line[vertex_coordinates[0] + 1:]
+            line = line[:vertex_coordinates[0]] + 'C' + line[vertex_coordinates[0] + 1:]
             #print(f'Koordinate {line[vertex_coordinates[0]:]} \n')
             content[row_idx] = line
 
             break
+
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+        file.writelines(content)
+
+def insert_road(vertex1_coordinates, vertex2_coordinates, player):
+
+    if vertex1_coordinates[1] < vertex2_coordinates[1]:
+        higher_vertex_coordinates = vertex1_coordinates
+        lower_vertex_coordinates = vertex2_coordinates
+    else:
+        higher_vertex_coordinates = vertex2_coordinates
+        lower_vertex_coordinates = vertex1_coordinates
+
+    if higher_vertex_coordinates[0] > lower_vertex_coordinates[0]:
+        road_type = f'/'
+        road_positions = [(higher_vertex_coordinates[0] - 1, higher_vertex_coordinates[1] + 1), 
+                          (higher_vertex_coordinates[0] - 2, higher_vertex_coordinates[1] + 2),
+                          (higher_vertex_coordinates[0] - 3, higher_vertex_coordinates[1] + 3)]
+        
+    elif higher_vertex_coordinates[0] < lower_vertex_coordinates[0]:
+        road_type = f'\\'
+        road_positions = [(higher_vertex_coordinates[0] + 1, higher_vertex_coordinates[1] + 1), 
+                          (higher_vertex_coordinates[0] + 2, higher_vertex_coordinates[1] + 2),
+                          (higher_vertex_coordinates[0] + 3, higher_vertex_coordinates[1] + 3)]
+        
+    else:
+        road_type = f'|'
+        road_positions = [(higher_vertex_coordinates[0], higher_vertex_coordinates[1] + 1), 
+                          (higher_vertex_coordinates[0], higher_vertex_coordinates[1] + 2),
+                          (higher_vertex_coordinates[0], higher_vertex_coordinates[1] + 3)]
+        
+    player_color = player_colors_codes[player.color]
+    road = f'{player_color}' + f'{road_type}' + f'{player_colors_codes[0]}'
+    
+    print(f'\n Higher: {higher_vertex_coordinates} \n')
+    print(f'\n Road: {road} \n')
+
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+        content = file.readlines()
+
+    positions_found = 0
+
+    road_found = False
+
+    for row_idx, line in enumerate(content):
+
+        for col_idx, row in enumerate(line):
+
+            if (col_idx, row_idx) == road_positions[road_found]:
+                road_found = True
+        
+        if road_found:
+            line = line[:road_positions[0][0]] + road + line[road_positions[0][0]+1:]
+            positions_found += 1
+            content[row_idx] = line
+
+            if positions_found >= 2:
+                break
 
     with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
         file.writelines(content)
