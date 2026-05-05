@@ -1,6 +1,10 @@
 import math
 
-def get_all_vertices():
+def get_all_vertices(): 
+
+    # Helper function to return position of every vertex on the board
+    # Returns a list of tuples with coordinates as (col position, row position)
+
     with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
 
         vertices = []
