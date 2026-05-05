@@ -19,44 +19,55 @@ def insert_hex_values(hexes):
         if 'EOF' in line:
             break
 
-        replacements = []
+        replacements = [] #replacements is a list of tuples which contains 
+                          # 1. the start replacement position
+                          # 2. the end replacement position
+                          # 3. the new value to insert
 
-        for col_idx, row in enumerate(line):
+        for col_idx, col in enumerate(line):
+
             if skip_next:
                 skip_next = False
                 continue
 
-            if row.isdigit():
+            if col.isdigit():
 
-                if line[col_idx + 1].isdigit():
+                digit_replacement_pos = col_idx
 
-                    current_digit = line[col_idx] + line[col_idx + 1]
-
-                    if hexes[hex_idx].value is None:
-                        replaced_value = 'D'
-                    else:
-                        replaced_value = hexes[hex_idx].value
-
-                    replacements.append((current_digit, replaced_value))
-
-                    hex_idx += 1
-
-                    skip_next = True
+                if hexes[hex_idx].resource_yield == Resource.DESERT:
+                    new_digit = 'D'
                 else:
-                    current_digit = line[col_idx]
+                    new_digit = hexes[hex_idx].value
+    
+                hex_idx += 1
 
-                    if hexes[hex_idx].value is None:
-                        replaced_value = 'D'
+                if line[col_idx + 1].isdigit(): #checks if current hex has double digit number (10, 11...)
+                    
+                    if len(str(new_digit)) == 2: #if the replacement value is also double digit
+
+                        replacements.append((digit_replacement_pos, (digit_replacement_pos + 2), str(new_digit)))
+                        skip_next = True
+                        continue
+
                     else:
-                        replaced_value = hexes[hex_idx].value
 
-                    replacements.append((current_digit, replaced_value))
-                        
-                    hex_idx += 1
+                        new_digit = f' {new_digit}'
+
+                        replacements.append((digit_replacement_pos, (digit_replacement_pos + 2), str(new_digit)))
+                        skip_next = True
+                        continue
 
 
-        for old, new in replacements:
-            line = line.replace(old, str(new))                                    
+                if len(str(new_digit)) == 2: 
+
+                        replacements.append((digit_replacement_pos - 1, (digit_replacement_pos + 1), str(new_digit)))
+                        continue
+
+                replacements.append((digit_replacement_pos, (digit_replacement_pos + 1), str(new_digit)))
+                continue
+
+        for start_pos, end_pos, value in reversed(replacements):
+            line = line[:start_pos] + value + line[end_pos:]
         content[row_idx] = line
 
     with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
