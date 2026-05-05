@@ -10,9 +10,9 @@ def get_all_vertices():
             if 'EOF' in line:
                 return vertices
 
-            for col_idx, row in enumerate(line):
+            for col_idx, col in enumerate(line):
 
-                if row == '.':
+                if col == '.':
                     vertices.append((col_idx, row_idx))
 
 def get_all_hexes():
@@ -25,9 +25,9 @@ def get_all_hexes():
             if 'EOF' in line:
                 return hex_positions
             
-            for col_idx, row in enumerate(line):
+            for col_idx, col in enumerate(line):
 
-                if row.isdigit() or row == 'D':
+                if col.isdigit() or col == 'D':
 
                     if line[col_idx - 1].isdigit():
                         continue
