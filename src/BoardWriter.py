@@ -149,6 +149,34 @@ def insert_settlement(vertex_coordinates, player):
     with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
         file.writelines(content)
 
+def insert_city(vertex_coordinates, player):
+
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+        content = file.readlines()
+
+    position_found = False
+
+    for row_idx, line in enumerate(content):
+
+        for col_idx, row in enumerate(line):
+            #print(f'Koordinate {(col_idx, row_idx)} \n')
+            
+            if (col_idx, row_idx) == vertex_coordinates:
+                
+                position_found = True
+            
+        if position_found:
+
+            player_color = player_colors_codes[player.color]
+            city = f'{player_color}' + 'C' + f'{player_colors_codes[0]}'
+            line = line[:vertex_coordinates[0]] + city + line[vertex_coordinates[0] + 1:]
+            #print(f'Koordinate {line[vertex_coordinates[0]:]} \n')
+            content[row_idx] = line
+
+            break
+
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+        file.writelines(content)
 
 def reset_board():
     with open('../data/catan_hex_grid_template.txt', mode = 'r', encoding = None) as file:
