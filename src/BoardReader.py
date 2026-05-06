@@ -16,7 +16,7 @@ def get_all_vertices():
 
             for col_idx, col in enumerate(line):
 
-                if col == '.':
+                if col == '.' or col == 'S' or col == 'C':
                     vertices.append((col_idx, row_idx))
 
 def get_all_hexes():
