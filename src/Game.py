@@ -2,7 +2,7 @@ import Buildings
 from BoardReader import get_hex_grid
 from BoardWriter import insert_city, insert_settlement
 from Player import player_colors_codes, PlayerColor, player_colors_names
-from ResourceEnum import resource_emoji
+from ResourceEnum import resource_emoji, Resource
 import random
 
 class Game:
@@ -35,7 +35,7 @@ class Game:
         road_type, road_positions = road.get_road_info() 
         for road_position in road_positions:
             self.roads[road_position] = player # adding the physical road parts to dictionary with player it belongs to
-            print(f'Road position: {road_position} \n')
+            #print(f'Road position: {road_position} \n')
 
 
     def print_hex_grid(self):
@@ -119,7 +119,14 @@ class Game:
 
                     owner.resources[hex.resource_yield] += 1
 
-                    print(f'Added: 1 {resource_emoji[hex.resource_yield]} to {player_colors_names[owner.color]}! \n ')
+                    if hex.resource_yield == Resource.STONE:
+
+                        print(f'Added: 1 {resource_emoji[hex.resource_yield]}  to {player_colors_names[owner.color]}! \n ')
+                    
+                    else:
+
+                        print(f'Added: 1 {resource_emoji[hex.resource_yield]} to {player_colors_names[owner.color]}! \n ')
+                    
 
                 if vertex in self.cities:
 
@@ -127,6 +134,12 @@ class Game:
 
                     owner.resources[hex.resource_yield] += 2
 
-                    print(f'Added: 2 {resource_emoji[hex.resource_yield]} to {player_colors_names[owner.color]}! \n ')
+                    if hex.resource_yield == Resource.STONE:
+
+                        print(f'Added: 2 {resource_emoji[hex.resource_yield]}  to {player_colors_names[owner.color]}! \n ')
+
+                    else:
+
+                        print(f'Added: 2 {resource_emoji[hex.resource_yield]} to {player_colors_names[owner.color]}! \n ')
 
     
