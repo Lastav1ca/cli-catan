@@ -1,5 +1,6 @@
 import math
 
+
 def get_all_vertices(): 
 
     # Helper function to return position of every vertex on the board
@@ -19,7 +20,12 @@ def get_all_vertices():
                 if col == '.' or col == 'S' or col == 'C':
                     vertices.append((col_idx, row_idx))
 
-def get_all_hexes():
+
+def get_all_hexes_positions():
+
+    # Helper function to return position of every hex on the board
+    # Returns a list of tuples with coordinates as (col position, row position) - every coordinate is the location of the digit inside the hex (the center)
+
     with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
 
         hex_positions = []
@@ -39,8 +45,10 @@ def get_all_hexes():
                     hex_positions.append((col_idx, row_idx))
 
 
-
 def find_hex_vertices(hex_physical_coordinates):
+
+    # Finds physical position of every vertex that a hex has, based on hexes physical coordinates
+
     vertices = get_all_vertices()
 
     distances = []
@@ -62,11 +70,14 @@ def find_hex_vertices(hex_physical_coordinates):
 
     return hex_vertices
 
+
 def get_hex_grid():
+
+    # Returns the hex grid in its uncolored state
+
     with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
         content = file.readlines()
 
     content.pop()
 
     return content
-

@@ -24,4 +24,12 @@ resource_emoji = {
     Resource.DESERT : '🏜️',
 }
 
+resource_name = {
+    Resource.SHEEP : 'SHEEP',
+    Resource.WHEAT : 'WHEAT',
+    Resource.WOOD : 'TREE',
+    Resource.BRICK : 'BRICK',
+    Resource.STONE : 'STONE',
+}
+
     
