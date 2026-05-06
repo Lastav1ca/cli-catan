@@ -1,4 +1,5 @@
 from enum import Enum
+from ResourceEnum import Resource
 
 class PlayerColor(Enum):
     RED = 1
@@ -14,6 +15,20 @@ player_colors_codes = {
     PlayerColor.YELLOW : f'\033[33m',
 }
 
+player_colors_names = {
+    PlayerColor.RED : 'RED',
+    PlayerColor.BLUE : 'BLUE',
+    PlayerColor.GREEN : 'GREEN',
+    PlayerColor.YELLOW : 'YELLOW',
+}
+
 class Player:
     def __init__(self, color):
         self.color = color
+        self.resources = {
+            Resource.SHEEP : 0,
+            Resource.WHEAT : 0,
+            Resource.WOOD : 0,
+            Resource.BRICK : 0,
+            Resource.STONE : 0,
+        }

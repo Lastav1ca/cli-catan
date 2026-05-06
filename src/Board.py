@@ -1,7 +1,7 @@
 import ResourceEnum
 import random
 from Hex import Hex
-from BoardReader import get_all_hexes, find_hex_vertices
+from BoardReader import get_all_hexes_positions, find_hex_vertices
 
 class HexGrid():
     def __init__(self):
@@ -17,6 +17,7 @@ class HexGrid():
         ##   13  14   15    16
 
         ##     17   18   19
+
 
     def generate_hex_grid(self):
 
@@ -43,10 +44,11 @@ class HexGrid():
         random.shuffle(hexes)
 
         return hexes
-    
+
+
     def map_vertices_to_hex(self):
 
-        hex_coordinates = get_all_hexes()
+        hex_coordinates = get_all_hexes_positions()
 
         hex_idx = 0
 
@@ -58,7 +60,19 @@ class HexGrid():
 
             hex_idx += 1
 
-    def print_hex_vertices(self):
+
+    def get_hex_by_value(self, value):
+
+        found_hexes = []
+
+        for hex in self.hexes:
+            if hex.value == value:
+                found_hexes.append(hex)
+
+        return found_hexes
+
+
+    def get_all_hex_vertices(self):
 
         idx = 0
 
