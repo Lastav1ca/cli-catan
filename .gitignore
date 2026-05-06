@@ -1,4 +1,4 @@
 venv/
 memory/
 __pycache__/
-
+data/catan_hex_grid.txt
