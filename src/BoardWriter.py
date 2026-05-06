@@ -2,7 +2,8 @@ from ResourceEnum import resource_emoji, Resource
 from Player import player_colors_codes, PlayerColor
 
 
-def initialize_board(hexes):
+def initialize_board(hex_grid):
+    hexes = hex_grid.hexes
     insert_hex_values(hexes)
     insert_hex_resources(hexes)
 
@@ -204,8 +205,8 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
     player_color = player_colors_codes[player.color]
     road = f'{player_color}' + f'{road_type}' + f'{player_colors_codes[0]}'
     
-    print(f'\n Higher: {higher_vertex_coordinates} \n')
-    print(f'\n Road: {road} \n')
+    #print(f'\n Higher: {higher_vertex_coordinates} \n')
+    #print(f'\n Road: {road} \n')
 
     with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
         content = file.readlines()

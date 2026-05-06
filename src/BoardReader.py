@@ -62,12 +62,11 @@ def find_hex_vertices(hex_physical_coordinates):
 
     return hex_vertices
 
-def print_hex_grid():
+def get_hex_grid():
     with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
         content = file.readlines()
 
     content.pop()
 
-    for row_idx, line in enumerate(content):
-        print(line)
+    return content
 
