@@ -332,3 +332,13 @@ class Game:
         self.create_road(player, vertex1, vertex2)
         print(f'{player_colors_names[player.color]} purchased a Road!')
 
+
+    def trade_with_bank(self, player, give_resource, give_amount, get_resource, get_amount):
+        player.resources[give_resource] -= give_amount
+        player.resources[get_resource] += get_amount
+
+    def trade_with_player(self, player1, player2, give_resource, give_amount, get_resource, get_amount):
+        player1.resources[give_resource] -= give_amount
+        player2.resources[get_resource] += get_amount
+
+    
