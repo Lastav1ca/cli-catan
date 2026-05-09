@@ -81,3 +81,116 @@ def get_hex_grid():
     content.pop()
 
     return content
+
+
+def get_empty_vertices(): 
+
+    # Helper function to return position of every free vertex on the board
+    # Returns a list of tuples with coordinates as (col position, row position)
+
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+
+        vertices = []
+
+        for row_idx, line in enumerate(file):
+
+            if 'EOF' in line:
+                return vertices
+
+            for col_idx, col in enumerate(line):
+
+                if col == '.':
+                    vertices.append((col_idx, row_idx))
+
+                
+def is_vertex_empty(vertex):
+    empty_vertices = get_empty_vertices()
+
+    if vertex in empty_vertices:
+        return True
+
+    return False
+
+
+def get_adjacent_vertices(vertex):
+
+    adjacent_vertices = []   
+
+    grid = get_hex_grid()
+
+    for row_idx, line in enumerate(grid):
+
+        for col_idx, col in enumerate(line):
+
+            if ((col_idx, row_idx) == vertex):
+
+                if (col_idx, row_idx + 2) == '.' or (col_idx, row_idx + 2) == 'S' or (col_idx, row_idx + 2) == 'C':
+                    adjacent_vertices.append((col_idx, row_idx + 2))
+                                             
+                if (col_idx, row_idx - 2) == '.' or (col_idx, row_idx - 2) == 'S' or (col_idx, row_idx - 2) == 'C':
+                    adjacent_vertices.append((col_idx, row_idx + 2))
+
+                if (col_idx + 4, row_idx + 4) == '.' or (col_idx + 4, row_idx + 4) == 'S' or (col_idx + 4, row_idx + 4) == 'C':
+                    adjacent_vertices.append((col_idx + 4, row_idx + 4))
+
+                if (col_idx + 4, row_idx - 4) == '.' or (col_idx + 4, row_idx - 4) == 'S' or (col_idx + 4, row_idx - 4) == 'C':
+                    adjacent_vertices.append((col_idx + 4, row_idx - 4))
+
+                if (col_idx - 4, row_idx + 4) == '.' or (col_idx - 4, row_idx + 4) == 'S' or (col_idx - 4, row_idx + 4) == 'C':
+                    adjacent_vertices.append((col_idx - 4, row_idx + 4))
+
+                if (col_idx - 4, row_idx - 4) == '.' or (col_idx - 4, row_idx - 4) == 'S' or (col_idx - 4, row_idx - 4) == 'C':
+                    adjacent_vertices.append((col_idx - 4, row_idx - 4))
+
+                break
+        break
+
+    return adjacent_vertices
+
+
+def get_empty_adjacent_vertices(vertex):
+
+    empty_adjacent_vertices = []   
+
+    grid = get_hex_grid()
+
+    for row_idx, line in enumerate(grid):
+
+        for col_idx, col in enumerate(line):
+
+            if ((col_idx, row_idx) == vertex):
+
+                if (col_idx, row_idx + 2) == '.':
+                    empty_adjacent_vertices.append((col_idx, row_idx + 2))
+                                             
+                if (col_idx, row_idx - 2) == '.':
+                    empty_adjacent_vertices.append((col_idx, row_idx + 2))
+
+                if (col_idx + 4, row_idx + 4) == '.':
+                    empty_adjacent_vertices.append((col_idx + 4, row_idx + 4))
+
+                if (col_idx + 4, row_idx - 4) == '.':
+                    empty_adjacent_vertices.append((col_idx + 4, row_idx - 4))
+
+                if (col_idx - 4, row_idx + 4) == '.':
+                    empty_adjacent_vertices.append((col_idx - 4, row_idx + 4))
+
+                if (col_idx - 4, row_idx - 4) == '.':
+                    empty_adjacent_vertices.append((col_idx - 4, row_idx - 4))
+
+                break
+        break
+
+    return empty_adjacent_vertices
+
+
+def is_vertex_adjacent_to_settlement_or_city(vertex):
+    adjacent = get_adjacent_vertices(vertex)
+    empty = get_empty_adjacent_vertices(vertex)
+
+    if len(empty) == len(adjacent):
+        return False
+    
+    return True
+
+    

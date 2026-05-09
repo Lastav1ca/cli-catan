@@ -1,5 +1,5 @@
 import Buildings
-from BoardReader import get_hex_grid
+from BoardReader import get_hex_grid, is_vertex_empty, is_vertex_adjacent_to_settlement_or_city, get_adjacent_vertices
 from BoardWriter import insert_city, insert_settlement
 from Player import player_colors_codes, PlayerColor, player_colors_names
 from ResourceEnum import resource_emoji, Resource
@@ -11,12 +11,15 @@ class Game:
         self.settlements = {}
         self.cities = {}
         self.roads = {}
+        self.roads_end_points = {} # roads dictionary, but with vertexes as key and player who owns road as value
 
 
     def create_settlement(self, player, position):
         settlement = Buildings.Settlement(player, position)
 
         self.settlements[position] = player # adding the physical settlement to dictionary with the player it belongs to
+
+        player.add_settlement(settlement)
 
         insert_settlement(position) # inserting S into position on grid
 
@@ -27,6 +30,8 @@ class Game:
 
         self.cities[position] = player # adding the physical city to dictionary with the player it belongs to
 
+        player.add_city(city)
+
         insert_city(position) # inserting C into position on grid
 
 
@@ -35,6 +40,11 @@ class Game:
         road_type, road_positions = road.get_road_info() 
         for road_position in road_positions:
             self.roads[road_position] = player # adding the physical road parts to dictionary with player it belongs to
+
+            self.roads_end_points[vertex1] = player
+            self.roads_end_points[vertex2] = player
+
+            player.add_road(road)
             #print(f'Road position: {road_position} \n')
 
 
@@ -142,4 +152,183 @@ class Game:
 
                         print(f'Added: 2 {resource_emoji[hex.resource_yield]} to {player_colors_names[owner.color]}! \n ')
 
+
+    def is_road_taken(self, vertex1, vertex2):
+
+        if vertex1[1] < vertex2[1]:
+            higher_vertex_coordinates = vertex1
+            lower_vertex_coordinates = vertex2
+        else:
+            higher_vertex_coordinates = vertex2
+            lower_vertex_coordinates = vertex1
+
+        if higher_vertex_coordinates[0] > lower_vertex_coordinates[0]:
+            road_type = f'/'
+            road_positions = [(higher_vertex_coordinates[0] - 1, higher_vertex_coordinates[1] + 1), 
+                            (higher_vertex_coordinates[0] - 2, higher_vertex_coordinates[1] + 2),
+                            (higher_vertex_coordinates[0] - 3, higher_vertex_coordinates[1] + 3)]
+        
+        elif higher_vertex_coordinates[0] < lower_vertex_coordinates[0]:
+            road_type = f'\\'
+            road_positions = [(higher_vertex_coordinates[0] + 1, higher_vertex_coordinates[1] + 1), 
+                            (higher_vertex_coordinates[0] + 2, higher_vertex_coordinates[1] + 2),
+                            (higher_vertex_coordinates[0] + 3, higher_vertex_coordinates[1] + 3)]
+        
+        else:
+            road_type = f'|'
+            road_positions = [(higher_vertex_coordinates[0], higher_vertex_coordinates[1] + 1), 
+                            (higher_vertex_coordinates[0], higher_vertex_coordinates[1] + 2),
+                            (higher_vertex_coordinates[0], higher_vertex_coordinates[1] + 3)]
+            
+        if road_positions[0] in self.roads:
+            return True
+        
+        return False
+
+
+    def is_adjacent_to_players_road(self, position, player):
+
+        if(position in self.roads_end_points):
+            if(self.roads_end_points[position] == player):
+                return True
+        
+        return False
     
+
+    def is_road_adjacent_to_players_structure(self, vertex1, vertex2, player):
+
+        if vertex1 in self.settlements:
+            if self.settlements[vertex1] == player:
+                return True
+            
+        if vertex1 in self.cities:
+            if self.cities[vertex1] == player:
+                return True
+            
+        if vertex2 in self.settlements:
+            if self.settlements[vertex2] == player:
+                return True
+
+        if vertex2 in self.cities:
+            if self.cities[vertex2] == player:
+                return True
+            
+        if self.is_adjacent_to_players_road(vertex1, player) or self.is_adjacent_to_players_road(vertex2, player):
+            return True
+        
+        return False
+    
+
+    def is_road_blocked(self, vertex1, vertex2, player):
+
+        if vertex1 in self.settlements:
+            touching_left, owned_left  = vertex1, self.settlements[vertex1]
+        elif vertex1 in self.cities:
+            touching_left, owned_left  = vertex1, self.cities[vertex1]
+        else:
+            touching_left, owned_left  = None, None
+
+        if vertex2 in self.settlements:
+            touching_right, owned_right  = vertex2, self.settlements[vertex2]
+        elif vertex2 in self.cities:
+            touching_right, owned_right  = vertex2, self.cities[vertex2]
+        else:
+            touching_right, owned_right  = None, None
+
+        if (owned_left != player and touching_left is not None and touching_right is None):
+            return True
+        if (owned_right != player and touching_right is not None and touching_left is None):
+            return True
+        
+        return False
+
+
+
+    def is_players_settlement(self, position, player):
+
+        if position in self.settlements:
+
+            if self.settlements[position] == player:
+                return True
+        
+        return False
+
+
+    def purchase_settlement(self, player, position):
+
+        if  (player.resources[Resource.BRICK] < 1 or 
+        player.resources[Resource.WOOD] < 1 or 
+        player.resources[Resource.WHEAT] < 1 or 
+        player.resources[Resource.SHEEP] < 1):
+            
+            print(f'Insufficient funds! \n')
+            return
+            
+        if not is_vertex_empty(position):
+                
+            print(f'Location unavailable! \n')
+            return
+        
+        if is_vertex_adjacent_to_settlement_or_city(position):
+
+            print(f'Can\'t place settlement there! Another settlement/city is adjacent! \n')
+            return
+
+        if not self.is_adjacent_to_players_road(position, player):
+
+            print(f'Can\'t place settlement there! Must have adjacent road of your own connected! \n')
+            return
+
+        player.resources[Resource.BRICK] -= 1
+        player.resources[Resource.WOOD] -= 1
+        player.resources[Resource.WHEAT] -= 1
+        player.resources[Resource.SHEEP] -= 1
+
+        self.create_settlement(player, position)
+        print(f'{player_colors_names[player.color]} purchased a Settlement!')
+
+
+    def purchase_city(self, player, position):
+
+        if  (player.resources[Resource.WHEAT] < 2 or 
+        player.resources[Resource.STONE] < 3):
+            
+            print(f'Insufficient funds! \n')
+            return
+            
+        if not self.is_players_settlement(position, player):
+            print(f'Must place City on top of your own settlement! \n')
+            return
+
+        player.resources[Resource.WHEAT] -= 2
+        player.resources[Resource.STONE] -= 3
+
+        self.create_city(player, position)
+        print(f'{player_colors_names[player.color]} purchased a City!')
+
+
+    def purchase_road(self, player, vertex1, vertex2):
+
+        if (player.resources[Resource.BRICK] < 1 or 
+        player.resources[Resource.WOOD] < 1):
+            print(f'Insufficient funds! \n')
+            return
+        
+        if self.is_road_taken(vertex1, vertex2):
+            print(f'Road space is taken! \n')
+            return
+        
+        if not self.is_road_adjacent_to_players_structure(vertex1, vertex2, player):
+            print(f'Road must be adjacent to your own road/settlement! \n')
+            return
+        
+        if self.is_road_blocked(vertex1, vertex2, player):
+            print(f'Road is blocked \n')
+            return
+                
+        player.resources[Resource.BRICK] -= 1
+        player.resources[Resource.WOOD] -= 1
+
+        self.create_road(player, vertex1, vertex2)
+        print(f'{player_colors_names[player.color]} purchased a Road!')
+

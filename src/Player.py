@@ -32,3 +32,18 @@ class Player:
             Resource.BRICK : 0,
             Resource.STONE : 0,
         }
+        self.owned_settlements = []
+        self.owned_cities = []
+        self.owned_roads = []
+        self.points = 0
+
+    def add_settlement(self, settlement):
+        self.owned_settlements.append(settlement)
+        self.points += 1
+
+    def add_city(self, city):
+        self.owned_cities.append(city)
+        self.points += 1
+
+    def add_road(self, road):
+        self.owned_roads.append(road)
