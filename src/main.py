@@ -1,3 +1,6 @@
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+
 from Board import HexGrid
 from BoardWriter import initialize_board, insert_hex_values, insert_hex_resources, reset_board, insert_robber
 from Player import Player, PlayerColor
@@ -52,7 +55,7 @@ if __name__ == '__main__':
     give_road_resources(player_red)
     game.purchase_road(player_red, (14, 0), (18, 4))
 
-    print('\n--- TEST 6: place robber ---')
-    insert_robber(3)
+    #print('\n--- TEST 6: place robber ---')
+    #insert_robber(3)
 
     game.print_hex_grid()

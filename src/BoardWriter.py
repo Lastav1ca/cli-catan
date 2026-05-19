@@ -10,7 +10,7 @@ def initialize_board(hex_grid):
 
 def insert_hex_values(hexes):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     hex_idx = 0
@@ -72,13 +72,13 @@ def insert_hex_values(hexes):
             line = line[:start_pos] + value + line[end_pos:]
         content[row_idx] = line
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 
 def insert_hex_resources(hexes):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     hex_idx = 0
@@ -117,13 +117,13 @@ def insert_hex_resources(hexes):
         content[row_idx] = line
             
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 
 def insert_settlement(vertex_coordinates):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     position_found = False
@@ -145,12 +145,12 @@ def insert_settlement(vertex_coordinates):
 
             break
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 def insert_city(vertex_coordinates):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     position_found = False
@@ -172,7 +172,7 @@ def insert_city(vertex_coordinates):
 
             break
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 def insert_road(vertex1_coordinates, vertex2_coordinates, player):
@@ -208,7 +208,7 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
     #print(f'\n Higher: {higher_vertex_coordinates} \n')
     #print(f'\n Road: {road} \n')
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     positions_found = 0
@@ -230,21 +230,21 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
             if positions_found >= 2:
                 break
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 
 def reset_board():
-    with open('../data/catan_hex_grid_template.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid_template.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 
 def insert_robber(hex_num):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     hex_idx = 0
@@ -277,6 +277,6 @@ def insert_robber(hex_num):
         line = line[:replacement[0]] + replacement[2] + line[replacement[1]:]
         content[row_idx] = line
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
