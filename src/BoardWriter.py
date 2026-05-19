@@ -130,7 +130,7 @@ def insert_settlement(vertex_coordinates):
 
     for row_idx, line in enumerate(content):
 
-        for col_idx, row in enumerate(line):
+        for col_idx, col in enumerate(line):
             #print(f'Koordinate {(col_idx, row_idx)} \n')
             
             if (col_idx, row_idx) == vertex_coordinates:
@@ -157,7 +157,7 @@ def insert_city(vertex_coordinates):
 
     for row_idx, line in enumerate(content):
 
-        for col_idx, row in enumerate(line):
+        for col_idx, col in enumerate(line):
             #print(f'Koordinate {(col_idx, row_idx)} \n')
             
             if (col_idx, row_idx) == vertex_coordinates:
@@ -217,7 +217,7 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
 
     for row_idx, line in enumerate(content):
 
-        for col_idx, row in enumerate(line):
+        for col_idx, col in enumerate(line):
 
             if (col_idx, row_idx) == road_positions[road_found]:
                 road_found = True
@@ -233,9 +233,50 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
     with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
         file.writelines(content)
 
+
 def reset_board():
     with open('../data/catan_hex_grid_template.txt', mode = 'r', encoding = None) as file:
         content = file.readlines()
 
     with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
         file.writelines(content)
+
+
+def insert_robber(hex_num):
+
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+        content = file.readlines()
+
+    hex_idx = 0
+    position_found = False
+
+    for row_idx, line in enumerate(content):
+
+        if 'EOF' in line:
+            break
+
+        for col_idx, col in enumerate(line):
+
+            if col.isdigit() or col == 'D':
+
+                hex_idx += 1
+
+            if hex_idx == hex_num:
+
+                digit_replacement_pos = col_idx
+
+                if line[col_idx + 1].isdigit(): #checks if current hex has double digit number (10, 11...)
+
+                    replacement = (digit_replacement_pos, (digit_replacement_pos + 2), str(f' R'))
+                    skip_next = True
+                    break
+
+                replacement = ((digit_replacement_pos, (digit_replacement_pos + 1), 'R'))
+                break
+
+        line = line[:replacement[0]] + replacement[2] + line[replacement[1]:]
+        content[row_idx] = line
+
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+        file.writelines(content)
+
