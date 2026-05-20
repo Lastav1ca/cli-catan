@@ -1,6 +1,6 @@
 import Buildings
 from BoardReader import get_hex_grid, is_vertex_empty, is_vertex_adjacent_to_settlement_or_city, get_adjacent_vertices
-from BoardWriter import insert_city, insert_settlement
+from BoardWriter import insert_city, insert_settlement, insert_robber
 from Player import player_colors_codes, PlayerColor, player_colors_names
 from ResourceEnum import resource_emoji, Resource
 import random
@@ -347,6 +347,158 @@ class Game:
 
         player2.resources[get_resource] -= get_amount
         player2.resources[give_resource] += give_resource
+
+
+    def purchase_development_card(self, player):
+        if (player.resources[Resource.SHEEP] < 1 or
+            player.resources[Resource.WHEAT] < 1 or
+            player.resources[Resource.STONE] < 1):
+            print(f'Insufficient funds! \n')
+            return
+
+        if not self.development_cards:
+            print(f'Development card deck is empty! \n')
+            return
+
+        player.resources[Resource.SHEEP] -= 1
+        player.resources[Resource.WHEAT] -= 1
+        player.resources[Resource.STONE] -= 1
+
+        card = self.development_cards.pop()
+        player.new_development_cards[card] += 1
+        print(f'{player_colors_names[player.color]} bought a Development Card!')
+
+
+    def end_turn(self, player):
+        for card, amount in player.new_development_cards.items():
+            player.development_cards[card] += amount
+            player.new_development_cards[card] = 0
+
+
+    def get_players_on_hex(self, hex_obj, exclude=None):
+        # returns list of unique players owning a settlement/city on any vertex of hex_obj
+        owners = []
+        for vertex in hex_obj.vertices:
+            owner = None
+            if vertex in self.settlements:
+                owner = self.settlements[vertex]
+            elif vertex in self.cities:
+                owner = self.cities[vertex]
+            if owner is not None and owner is not exclude and owner not in owners:
+                owners.append(owner)
+        return owners
+
+
+    def steal_random_resource(self, thief, victim):
+        available = [r for r, amount in victim.resources.items() if amount > 0]
+        if not available:
+            print(f'{player_colors_names[victim.color]} has no resources to steal! \n')
+            return
+        stolen = random.choice(available)
+        victim.resources[stolen] -= 1
+        thief.resources[stolen] += 1
+        print(f'{player_colors_names[thief.color]} stole 1 {resource_emoji[stolen]} from {player_colors_names[victim.color]}! \n')
+
+
+    def play_knight(self, player, hex_num, hexes, victim=None):
+        if player.development_cards[DevelopmentCard.KNIGHT] < 1:
+            print(f'No Knight cards to play! \n')
+            return
+
+        if not 1 <= hex_num <= len(hexes):
+            print(f'Hex index {hex_num} out of range! \n')
+            return
+
+        player.development_cards[DevelopmentCard.KNIGHT] -= 1
+
+        insert_robber(hex_num, hexes)
+
+        target_hex = hexes[hex_num - 1]
+        candidates = self.get_players_on_hex(target_hex, exclude=player)
+
+        if not candidates:
+            print(f'No players to steal from on this hex. \n')
+            return
+
+        if victim is None:
+            victim = candidates[0]
+        elif victim not in candidates:
+            print(f'{player_colors_names[victim.color]} has no buildings on that hex! \n')
+            return
+
+        self.steal_random_resource(player, victim)
+
+
+    def play_road_building(self, player, road1_v1, road1_v2, road2_v1, road2_v2):
+        if player.development_cards[DevelopmentCard.ROAD_BUILDING] < 1:
+            print(f'No Road Building cards to play! \n')
+            return
+
+        if self.is_road_taken(road1_v1, road1_v2):
+            print(f'First road space is taken! \n')
+            return
+        if not self.is_road_adjacent_to_players_structure(road1_v1, road1_v2, player):
+            print(f'First road must be adjacent to your own road/settlement! \n')
+            return
+        if self.is_road_blocked(road1_v1, road1_v2, player):
+            print(f'First road is blocked! \n')
+            return
+
+        # card is consumed once we start placing — second road can chain off the first
+        player.development_cards[DevelopmentCard.ROAD_BUILDING] -= 1
+        self.create_road(player, road1_v1, road1_v2)
+
+        if self.is_road_taken(road2_v1, road2_v2):
+            print(f'Second road space is taken! Forfeited. \n')
+            return
+        if not self.is_road_adjacent_to_players_structure(road2_v1, road2_v2, player):
+            print(f'Second road must be adjacent to your own road/settlement! Forfeited. \n')
+            return
+        if self.is_road_blocked(road2_v1, road2_v2, player):
+            print(f'Second road is blocked! Forfeited. \n')
+            return
+
+        self.create_road(player, road2_v1, road2_v2)
+        print(f'{player_colors_names[player.color]} played Road Building!')
+
+
+    def play_year_of_plenty(self, player, resource1, resource2):
+        if player.development_cards[DevelopmentCard.YEAR_OF_PLENTY] < 1:
+            print(f'No Year of Plenty cards to play! \n')
+            return
+
+        player.development_cards[DevelopmentCard.YEAR_OF_PLENTY] -= 1
+        player.resources[resource1] += 1
+        player.resources[resource2] += 1
+        print(f'{player_colors_names[player.color]} played Year of Plenty: +1 {resource_emoji[resource1]} +1 {resource_emoji[resource2]} \n')
+
+
+    def play_monopoly(self, player, resource):
+        if player.development_cards[DevelopmentCard.MONOPOLY] < 1:
+            print(f'No Monopoly cards to play! \n')
+            return
+
+        player.development_cards[DevelopmentCard.MONOPOLY] -= 1
+
+        total = 0
+        for other in self.players:
+            if other is player:
+                continue
+            total += other.resources[resource]
+            other.resources[resource] = 0
+
+        player.resources[resource] += total
+        print(f'{player_colors_names[player.color]} monopolized {resource_emoji[resource]} and took {total}! \n')
+
+
+    def play_victory_point(self, player):
+        if player.development_cards[DevelopmentCard.VICTORY_POINT] < 1:
+            print(f'No Victory Point cards to play! \n')
+            return
+
+        player.development_cards[DevelopmentCard.VICTORY_POINT] -= 1
+        player.points += 1
+        print(f'{player_colors_names[player.color]} gained 1 Victory Point! \n')
 
 
     def initialize_development_deck(self):
