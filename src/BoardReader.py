@@ -20,6 +20,8 @@ def get_all_vertices():
                 if col == '.' or col == 'S' or col == 'C':
                     vertices.append((col_idx, row_idx))
 
+        return vertices
+
 
 def get_all_hexes_positions():
 
@@ -37,12 +39,14 @@ def get_all_hexes_positions():
             
             for col_idx, col in enumerate(line):
 
-                if col.isdigit() or col == 'D':
+                if col.isdigit() or col == 'D' or col == 'R':
 
                     if line[col_idx - 1].isdigit():
                         continue
 
                     hex_positions.append((col_idx, row_idx))
+
+        return hex_positions
 
 
 def find_hex_vertices(hex_physical_coordinates):
@@ -102,7 +106,9 @@ def get_empty_vertices():
                 if col == '.':
                     vertices.append((col_idx, row_idx))
 
-                
+        return vertices
+
+
 def is_vertex_empty(vertex):
     empty_vertices = get_empty_vertices()
 

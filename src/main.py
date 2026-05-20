@@ -16,13 +16,14 @@ def print_resources(player, name):
 
 if __name__ == '__main__':
 
+    reset_board()
+
     game = Game()
     game_board = HexGrid()
 
     player_red = Player(PlayerColor.RED)
     player_green = Player(PlayerColor.GREEN)
 
-    reset_board()
     initialize_board(game_board)
 
     # Red has a settlement and a road
@@ -55,7 +56,14 @@ if __name__ == '__main__':
     give_road_resources(player_red)
     game.purchase_road(player_red, (14, 0), (18, 4))
 
-    #print('\n--- TEST 6: place robber ---')
-    #insert_robber(3)
+    print('\n--- TEST 6: place robber ---')
+    # robber walk: single -> double -> single -> double
+    #insert_robber(3, game_board.hexes)
+    game.print_hex_grid()
+    insert_robber(10, game_board.hexes)
+    #game.print_hex_grid()
+    #insert_robber(5, game_board.hexes)
+    #game.print_hex_grid()
+    #insert_robber(12, game_board.hexes)
 
     game.print_hex_grid()
