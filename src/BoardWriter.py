@@ -1,5 +1,6 @@
 from ResourceEnum import resource_emoji, Resource
 from Player import player_colors_codes, PlayerColor
+from BoardReader import get_hex_grid
 
 
 def initialize_board(hex_grid):
@@ -10,7 +11,7 @@ def initialize_board(hex_grid):
 
 def insert_hex_values(hexes):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     hex_idx = 0
@@ -37,7 +38,7 @@ def insert_hex_values(hexes):
                 digit_replacement_pos = col_idx
 
                 if hexes[hex_idx].resource_yield == Resource.DESERT:
-                    new_digit = 'D'
+                    new_digit = 'R'
                 else:
                     new_digit = hexes[hex_idx].value
     
@@ -72,13 +73,13 @@ def insert_hex_values(hexes):
             line = line[:start_pos] + value + line[end_pos:]
         content[row_idx] = line
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 
 def insert_hex_resources(hexes):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     hex_idx = 0
@@ -117,20 +118,20 @@ def insert_hex_resources(hexes):
         content[row_idx] = line
             
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 
 def insert_settlement(vertex_coordinates):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     position_found = False
 
     for row_idx, line in enumerate(content):
 
-        for col_idx, row in enumerate(line):
+        for col_idx, col in enumerate(line):
             #print(f'Koordinate {(col_idx, row_idx)} \n')
             
             if (col_idx, row_idx) == vertex_coordinates:
@@ -145,19 +146,19 @@ def insert_settlement(vertex_coordinates):
 
             break
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 def insert_city(vertex_coordinates):
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     position_found = False
 
     for row_idx, line in enumerate(content):
 
-        for col_idx, row in enumerate(line):
+        for col_idx, col in enumerate(line):
             #print(f'Koordinate {(col_idx, row_idx)} \n')
             
             if (col_idx, row_idx) == vertex_coordinates:
@@ -172,7 +173,7 @@ def insert_city(vertex_coordinates):
 
             break
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
 
 def insert_road(vertex1_coordinates, vertex2_coordinates, player):
@@ -208,7 +209,7 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
     #print(f'\n Higher: {higher_vertex_coordinates} \n')
     #print(f'\n Road: {road} \n')
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     positions_found = 0
@@ -217,7 +218,7 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
 
     for row_idx, line in enumerate(content):
 
-        for col_idx, row in enumerate(line):
+        for col_idx, col in enumerate(line):
 
             if (col_idx, row_idx) == road_positions[road_found]:
                 road_found = True
@@ -230,12 +231,71 @@ def insert_road(vertex1_coordinates, vertex2_coordinates, player):
             if positions_found >= 2:
                 break
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
+
 
 def reset_board():
-    with open('../data/catan_hex_grid_template.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid_template.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
-    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'w', encoding = 'utf-8') as file:
         file.writelines(content)
+
+
+def insert_robber(hex_num, hexes):
+
+    content = get_hex_grid()
+
+    def slot_width(hex_obj):
+        if hex_obj.resource_yield == Resource.DESERT:
+            return 1
+        return 2 if hex_obj.value >= 10 else 1
+
+    tokens = []
+    hex_idx = 0
+    for row_idx, line in enumerate(content):
+        if 'EOF' in line:
+            break
+        col_idx = 0
+        while col_idx < len(line) and hex_idx < len(hexes):
+            ch = line[col_idx]
+            if ch.isdigit() or ch == 'D' or ch == 'R':
+                width = slot_width(hexes[hex_idx])
+                if width == 2 and ch == 'R':
+                    start = col_idx - 1
+                else:
+                    start = col_idx
+                end = start + width
+                tokens.append((row_idx, start, end))
+                hex_idx += 1
+                col_idx = end
+            else:
+                col_idx += 1
+
+    if not 1 <= hex_num <= len(tokens):
+        print(f'Hex index {hex_num} out of range (1..{len(tokens)})')
+        return
+
+    def write_token(idx, value):
+        row, start, end = tokens[idx]
+        width = end - start
+        padded = value.rjust(width)
+        line = content[row]
+        content[row] = line[:start] + padded + line[end:]
+
+    for i, (row, start, end) in enumerate(tokens):
+        if 'R' in content[row][start:end]:
+            hex_obj = hexes[i]
+            if hex_obj.resource_yield == Resource.DESERT:
+                original = 'D'
+            else:
+                original = str(hex_obj.value)
+            write_token(i, original)
+            break
+
+    write_token(hex_num - 1, 'R')
+
+    with open('../data/catan_hex_grid.txt', mode='w', encoding='utf-8') as file:
+        file.writelines(content)
+

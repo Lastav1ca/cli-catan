@@ -6,7 +6,7 @@ def get_all_vertices():
     # Helper function to return position of every vertex on the board
     # Returns a list of tuples with coordinates as (col position, row position)
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
 
         vertices = []
 
@@ -20,13 +20,15 @@ def get_all_vertices():
                 if col == '.' or col == 'S' or col == 'C':
                     vertices.append((col_idx, row_idx))
 
+        return vertices
+
 
 def get_all_hexes_positions():
 
     # Helper function to return position of every hex on the board
     # Returns a list of tuples with coordinates as (col position, row position) - every coordinate is the location of the digit inside the hex (the center)
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
 
         hex_positions = []
 
@@ -37,12 +39,14 @@ def get_all_hexes_positions():
             
             for col_idx, col in enumerate(line):
 
-                if col.isdigit() or col == 'D':
+                if col.isdigit() or col == 'D' or col == 'R':
 
                     if line[col_idx - 1].isdigit():
                         continue
 
                     hex_positions.append((col_idx, row_idx))
+
+        return hex_positions
 
 
 def find_hex_vertices(hex_physical_coordinates):
@@ -75,7 +79,7 @@ def get_hex_grid():
 
     # Returns the hex grid in its uncolored state
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
         content = file.readlines()
 
     content.pop()
@@ -88,7 +92,7 @@ def get_empty_vertices():
     # Helper function to return position of every free vertex on the board
     # Returns a list of tuples with coordinates as (col position, row position)
 
-    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = None) as file:
+    with open('../data/catan_hex_grid.txt', mode = 'r', encoding = 'utf-8') as file:
 
         vertices = []
 
@@ -102,7 +106,9 @@ def get_empty_vertices():
                 if col == '.':
                     vertices.append((col_idx, row_idx))
 
-                
+        return vertices
+
+
 def is_vertex_empty(vertex):
     empty_vertices = get_empty_vertices()
 

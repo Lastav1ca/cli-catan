@@ -1,0 +1,17 @@
+KNIGHT_COUNT = 14
+ROAD_BUILDING_COUNT = 2
+YEAR_OF_PLENTY_COUNT = 2
+MONOPOLY_COUNT = 2
+VICTORY_POINT_COUNT = 5
+
+
+from enum import Enum
+
+class DevelopmentCard(Enum):
+    KNIGHT = 1
+    ROAD_BUILDING = 2
+    YEAR_OF_PLENTY = 3
+    MONOPOLY = 4
+    VICTORY_POINT = 5
+
+

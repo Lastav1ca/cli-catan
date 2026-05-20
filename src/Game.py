@@ -4,15 +4,19 @@ from BoardWriter import insert_city, insert_settlement
 from Player import player_colors_codes, PlayerColor, player_colors_names
 from ResourceEnum import resource_emoji, Resource
 import random
+from Development import DevelopmentCard, KNIGHT_COUNT, ROAD_BUILDING_COUNT, YEAR_OF_PLENTY_COUNT, MONOPOLY_COUNT, VICTORY_POINT_COUNT
 
 class Game:
     def __init__(self):
+
         self.players = []
+
         self.settlements = {}
         self.cities = {}
         self.roads = {}
         self.roads_end_points = {} # roads dictionary, but with vertexes as key and player who owns road as value
-
+        
+        self.development_cards = self.initialize_development_deck()
 
     def create_settlement(self, player, position):
         settlement = Buildings.Settlement(player, position)
@@ -339,6 +343,20 @@ class Game:
 
     def trade_with_player(self, player1, player2, give_resource, give_amount, get_resource, get_amount):
         player1.resources[give_resource] -= give_amount
-        player2.resources[get_resource] += get_amount
+        player1.resources[get_resource] += get_amount
 
+        player2.resources[get_resource] -= get_amount
+        player2.resources[give_resource] += give_resource
+
+
+    def initialize_development_deck(self):
+        deck = (
+            [DevelopmentCard.KNIGHT] * KNIGHT_COUNT + 
+            [DevelopmentCard.ROAD_BUILDING] * ROAD_BUILDING_COUNT +
+            [DevelopmentCard.MONOPOLY] * MONOPOLY_COUNT + 
+            [DevelopmentCard.YEAR_OF_PLENTY] * YEAR_OF_PLENTY_COUNT +
+            [DevelopmentCard.VICTORY_POINT] * VICTORY_POINT_COUNT
+        )
+        random.shuffle(deck)
+        return deck
     
