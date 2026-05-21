@@ -2,68 +2,36 @@ import sys
 sys.stdout.reconfigure(encoding='utf-8')
 
 from Board import HexGrid
-from BoardWriter import initialize_board, insert_hex_values, insert_hex_resources, reset_board, insert_robber
+from BoardWriter import initialize_board, reset_board
 from Player import Player, PlayerColor
 from Game import Game
-from ResourceEnum import Resource
 
-def give_road_resources(player):
-    player.resources[Resource.BRICK] = 1
-    player.resources[Resource.WOOD] = 1
 
-def print_resources(player, name):
-    print(f'{name} resources: {dict(player.resources)}')
+def prompt_player_count():
+    while True:
+        raw = input('How many players? (2-4): ').strip()
+        try:
+            n = int(raw)
+            if 2 <= n <= 4:
+                return n
+        except ValueError:
+            pass
+        print('Enter 2, 3, or 4.')
+
+
+def build_players(n):
+    colors = [PlayerColor.RED, PlayerColor.BLUE, PlayerColor.GREEN, PlayerColor.YELLOW]
+    return [Player(c) for c in colors[:n]]
+
 
 if __name__ == '__main__':
-
     reset_board()
+    board = HexGrid()
+    initialize_board(board)
 
-    game = Game()
-    game_board = HexGrid()
+    print('========== CLI CATAN ==========')
+    n = prompt_player_count()
+    players = build_players(n)
 
-    player_red = Player(PlayerColor.RED)
-    player_green = Player(PlayerColor.GREEN)
-
-    initialize_board(game_board)
-
-    # Red has a settlement and a road
-    game.create_settlement(player_red, (10, 4))
-    game.create_road(player_red, (14, 0), (10, 4))
-
-    # Green has a settlement at a vertex adjacent to reds road endpoint
-    game.create_settlement(player_green, (14, 0))
-
-    game.print_hex_grid()
-
-    print('\n--- TEST 1: insufficient resources ---')
-    game.purchase_road(player_red, (10, 4), (6, 8))
-
-    print('\n--- TEST 2: valid road placement ---')
-    give_road_resources(player_red)
-    print_resources(player_red, 'RED before')
-    game.purchase_road(player_red, (10, 4), (10, 8))
-    print_resources(player_red, 'RED after')
-
-    print('\n--- TEST 3: duplicate road ---')
-    give_road_resources(player_red)
-    game.purchase_road(player_red, (14, 0), (10, 4))
-
-    print('\n--- TEST 4: not adjacent to own network ---')
-    give_road_resources(player_red)
-    game.purchase_road(player_red, (34, 16), (30, 12))
-
-    print('\n--- TEST 5: road blocked by opponent settlement ---')
-    give_road_resources(player_red)
-    game.purchase_road(player_red, (14, 0), (18, 4))
-
-    print('\n--- TEST 6: place robber ---')
-    # robber walk: single -> double -> single -> double
-    #insert_robber(3, game_board.hexes)
-    game.print_hex_grid()
-    insert_robber(10, game_board.hexes)
-    #game.print_hex_grid()
-    #insert_robber(5, game_board.hexes)
-    #game.print_hex_grid()
-    #insert_robber(12, game_board.hexes)
-
-    game.print_hex_grid()
+    game = Game(players)
+    game.play_game(board)
