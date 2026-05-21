@@ -1,5 +1,6 @@
 from enum import Enum
 from ResourceEnum import Resource
+from Development import DevelopmentCard
 
 class PlayerColor(Enum):
     RED = 1
@@ -36,6 +37,20 @@ class Player:
         self.owned_cities = []
         self.owned_roads = []
         self.points = 0
+        self.development_cards = {
+            DevelopmentCard.KNIGHT : 0,
+            DevelopmentCard.ROAD_BUILDING : 0,
+            DevelopmentCard.YEAR_OF_PLENTY : 0,
+            DevelopmentCard.MONOPOLY : 0,
+            DevelopmentCard.VICTORY_POINT : 0,
+        }
+        self.new_development_cards = {
+            DevelopmentCard.KNIGHT : 0,
+            DevelopmentCard.ROAD_BUILDING : 0,
+            DevelopmentCard.YEAR_OF_PLENTY : 0,
+            DevelopmentCard.MONOPOLY : 0,
+            DevelopmentCard.VICTORY_POINT : 0,
+        }
 
     def add_settlement(self, settlement):
         self.owned_settlements.append(settlement)
